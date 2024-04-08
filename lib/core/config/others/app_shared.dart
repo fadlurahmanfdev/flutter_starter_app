@@ -1,5 +1,6 @@
 import 'package:flutter_starter_app/core/config/data/route_model.dart';
 import 'package:get/get.dart';
+import 'package:get_it/get_it.dart';
 
 class AppShared {
   AppShared._();
@@ -15,6 +16,12 @@ class AppShared {
   static AppShared get instance => AppShared();
 
   List<RouteModel> routes = [];
+
+  late GetIt getIt;
+
+  void setGetIt(GetIt c){
+    getIt = c;
+  }
 
   void addRoute(RouteModel p) {
     final transitions = <Transition>[

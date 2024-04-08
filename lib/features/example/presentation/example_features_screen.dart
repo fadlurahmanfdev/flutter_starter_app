@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_starter_app/core/config/presentation/base_layout.dart';
 import 'package:flutter_starter_app/features/example/data/feature_model.dart';
 import 'package:flutter_starter_app/features/example/presentation/notification/example_notification_screen.dart';
+import 'package:flutter_starter_app/features/example/presentation/widget/feature_widget.dart';
 
 class ExampleFeaturesScreen extends StatefulWidget {
   const ExampleFeaturesScreen({super.key});
@@ -41,28 +42,10 @@ class _ExampleFeaturesScreenState extends State<ExampleFeaturesScreen>
                   break;
               }
             },
-            child: _itemFeature(feature),
+            child: ItemFeatureWidget(feature: feature),
           );
         },
       ),
-    );
-  }
-
-  Widget _itemFeature(FeatureModel feature) {
-    return Row(
-      children: [
-        Icon(Icons.developer_mode),
-        SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(feature.title),
-              Text(feature.desc),
-            ],
-          ),
-        )
-      ],
     );
   }
 }

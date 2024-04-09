@@ -20,7 +20,12 @@ class NotificationRepositoryImpl extends NotificationRepository {
   }
 
   @override
-  Future<void> showNotification(int id, String title, String body) {
-    return notificationService.showGeneralNotification(id, title, body);
+  Future<void> showNotification({
+    required int id,
+    required String title,
+    required String body,
+    Map<String, dynamic>? payload,
+  }) {
+    return notificationService.showGeneralNotification(id: id, title: title, body: body, payload: payload);
   }
 }

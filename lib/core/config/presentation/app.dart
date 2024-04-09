@@ -1,12 +1,38 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_starter_app/core/config/others/app_shared.dart';
+import 'package:flutter_starter_app/core/config/others/get_it_extension.dart';
 import 'package:flutter_starter_app/core/config/others/get_page_route_utility.dart';
+import 'package:flutter_starter_app/core/notification/domain/service/notification_service.dart';
 import 'package:get/get.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final getIt = AppShared.I.getIt;
+
+  @override
+  void initState() {
+    log("app initState");
+    super.initState();
+    getIt.get<NotificationService>().onTapForegroundNotificationClicked.listen((message) {
+      log("app message: ${message.toJson()}");
+    });
+  }
+
+  @override
+  void dispose() {
+    log("app dispose");
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -31,7 +57,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      getPages: GetPageRouteUtility.generateRoute(context, routes: AppShared.I.routes),
+      getPages: GetPageRouteUtility.generateRoute(context,
+          routes: AppShared.I.routes),
       initialRoute: GetPageRouteUtility.getInitialRoute(AppShared.I.routes),
     );
   }

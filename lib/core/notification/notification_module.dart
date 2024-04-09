@@ -9,7 +9,10 @@ class NotificationModule extends ClassModule {
   @override
   Future<void> registerDependency(GetIt c) async {
     c.registerLazySingletonAsync<NotificationService>(
-        () async => NotificationService()..init());
+      () async => NotificationService()
+        ..init()
+        ..initListener(),
+    );
 
     await c.isReady<NotificationService>();
     c.registerFactory<NotificationRepository>(() => NotificationRepositoryImpl(

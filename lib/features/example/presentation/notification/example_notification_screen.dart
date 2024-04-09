@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_starter_app/core/config/others/wrapper_state.dart';
@@ -50,15 +51,14 @@ class _ExampleNotificationScreenState extends State<ExampleNotificationScreen>
             onTap: () async {
               switch (feature.key) {
                 case 'PERMISSION':
-                  print("masuk isGranted: "
-                      "${await getIt.get<NotificationRepository>().isPermissionGranted()}");
+                  log("is notification permission granted: ${await getIt.get<NotificationRepository>().isPermissionGranted()}");
                   break;
                 case 'SHOW_NOTIFICATION':
                   final id = Random().nextInt(999);
                   getIt.get<NotificationRepository>().showNotification(
-                        id,
-                        'Random Title: $id',
-                        'Random Body: $id',
+                        id: id,
+                        title: 'Random Title: $id',
+                        body: 'Random Body: $id',
                       );
                   break;
                 default:

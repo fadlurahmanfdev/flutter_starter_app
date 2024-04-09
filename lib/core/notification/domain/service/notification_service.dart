@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart' as path_provider;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_starter_app/core/notification/data/local_notification_message_model.dart';
@@ -64,7 +68,7 @@ class NotificationService {
     log("onDidReceiveNotificationResponse: ${details.payload}");
     try {
       final payload = details.payload;
-      if(payload == null) return;
+      if (payload == null) return;
       final decodedPayload = json.decode(payload) as Map<String, dynamic>;
       final message = LocalNotificationMessageModel.fromJson(decodedPayload);
       _onTapForegroundNotificationClicked.sink.add(message);
@@ -73,38 +77,108 @@ class NotificationService {
     }
   }
 
-  final _androidGeneralChannelNotificationDetail =
-      const AndroidNotificationDetails(
-    'GENERAL',
-    'Umum',
-    channelDescription: 'Notifikasi Umum',
-    importance: Importance.max,
-    priority: Priority.high,
-  );
-  final DarwinNotificationDetails _darwinNotificationDetails =
-      const DarwinNotificationDetails(
-    threadIdentifier: 'GENERAL',
-  );
-
   Future<void> showGeneralNotification({
     required int id,
     required String title,
     required String body,
     Map<String, dynamic>? payload,
-  }) {
+  }) async {
     return localNotificationPlugin.show(
       id,
       title,
       body,
       NotificationDetails(
-        android: _androidGeneralChannelNotificationDetail,
-        iOS: _darwinNotificationDetails,
+        android: await _getAndroidGeneralNotificationDetails(),
+        iOS: await _getIOSGeneralNotificationDetails(),
       ),
       payload: json.encode({
         "title": title,
         "body": body,
         "payload": payload,
       }),
+    );
+  }
+
+  Future<void> showNetworkImageNotification({
+    required int id,
+    required String title,
+    required String body,
+    required String imageUrl,
+    Map<String, dynamic>? payload,
+  }) async {
+    return localNotificationPlugin.show(
+      id,
+      title,
+      body,
+      NotificationDetails(
+        android:
+            await _getAndroidGeneralNotificationDetails(networkImage: imageUrl),
+        iOS: await _getIOSGeneralNotificationDetails(networkImage: imageUrl),
+      ),
+      payload: json.encode({
+        "title": title,
+        "body": body,
+        "payload": payload,
+      }),
+    );
+  }
+
+  Future<AndroidNotificationDetails> _getAndroidGeneralNotificationDetails({
+    String? networkImage,
+  }) async {
+    BigPictureStyleInformation? bigPictureStyleInformation;
+    AndroidBitmap<Object>? largeIcon;
+    if (networkImage != null) {
+      try {
+        final response = await http.get(Uri.parse(networkImage));
+        final image = ByteArrayAndroidBitmap.fromBase64String(
+          base64Encode(response.bodyBytes),
+        );
+        largeIcon = image;
+        bigPictureStyleInformation = BigPictureStyleInformation(
+          image,
+          largeIcon: image,
+          hideExpandedLargeIcon: true,
+        );
+      } catch (e) {
+        log('error fetch image notification: $e');
+      }
+    }
+
+    return AndroidNotificationDetails(
+      'GENERAL',
+      'Umum',
+      channelDescription: 'Notifikasi Umum',
+      importance: Importance.max,
+      priority: Priority.high,
+      styleInformation: bigPictureStyleInformation,
+      largeIcon: largeIcon,
+    );
+  }
+
+  Future<DarwinNotificationDetails> _getIOSGeneralNotificationDetails({
+    String? networkImage,
+  }) async {
+    final dir = await path_provider.getTemporaryDirectory();
+    List<DarwinNotificationAttachment>? attachments;
+    if (networkImage != null) {
+      try {
+        var filename =
+            '${dir.path}/ios_notification_${DateTime.now().millisecond}.png';
+        final response = await http.get(Uri.parse(networkImage));
+        final file = File(filename);
+        await file.writeAsBytes(response.bodyBytes);
+        attachments = [
+          DarwinNotificationAttachment(filename),
+        ];
+      } catch (e) {
+        log('error fetch image notification: $e');
+      }
+    }
+
+    return DarwinNotificationDetails(
+      threadIdentifier: 'GENERAL',
+      attachments: attachments,
     );
   }
 }

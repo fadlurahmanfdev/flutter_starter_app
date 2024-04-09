@@ -26,6 +26,28 @@ class NotificationRepositoryImpl extends NotificationRepository {
     required String body,
     Map<String, dynamic>? payload,
   }) {
-    return notificationService.showGeneralNotification(id: id, title: title, body: body, payload: payload);
+    return notificationService.showGeneralNotification(
+      id: id,
+      title: title,
+      body: body,
+      payload: payload,
+    );
+  }
+
+  @override
+  Future<void> showNetworkImageNotification({
+    required int id,
+    required String title,
+    required String body,
+    required String imageUrl,
+    Map<String, dynamic>? payload,
+  }) {
+    return notificationService.showNetworkImageNotification(
+      id: id,
+      title: title,
+      body: body,
+      imageUrl: imageUrl,
+      payload: payload,
+    );
   }
 }

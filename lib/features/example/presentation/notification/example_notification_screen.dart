@@ -34,6 +34,11 @@ class _ExampleNotificationScreenState extends State<ExampleNotificationScreen>
       desc: 'Show Simple Notification',
       key: 'SHOW_NOTIFICATION',
     ),
+    FeatureModel(
+      title: 'Image Notification',
+      desc: 'Show Image Notification',
+      key: 'SHOW_IMAGE_NOTIFICATION',
+    ),
   ];
 
   @override
@@ -60,6 +65,15 @@ class _ExampleNotificationScreenState extends State<ExampleNotificationScreen>
                         title: 'Random Title: $id',
                         body: 'Random Body: $id',
                       );
+                  break;
+                case 'SHOW_IMAGE_NOTIFICATION':
+                  final id = Random().nextInt(999);
+                  getIt.get<NotificationRepository>().showNetworkImageNotification(
+                    id: id,
+                    title: 'Random Image Title: $id',
+                    body: 'Random Image Body: $id',
+                    imageUrl: 'https://raw.githubusercontent.com/TutorialsBuzz/cdn/main/android.jpg'
+                  );
                   break;
                 default:
                   break;
